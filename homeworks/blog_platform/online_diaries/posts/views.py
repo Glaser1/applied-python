@@ -1,5 +1,3 @@
-from django.db.models.query import Prefetch
-from cmath import log
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -11,7 +9,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import CommentForm, PostForm
-from .models import Like, Post, PostView, Comment
+from .models import Comment, Like, Post, PostView
 
 User = get_user_model()
 
@@ -93,11 +91,11 @@ def posts_list(request):
 
         posts = posts.order_by("-views_count")
 
-    if sort_by and not top_posts_period:
-        posts = posts.order_by(SORT_OPTIONS.get(sort_by, "-created_at"))
-
     if search_box:
         posts = posts.filter(topic__icontains=search_box)
+
+    if sort_by and not top_posts_period:
+        posts = posts.order_by(SORT_OPTIONS.get(sort_by, "-created_at"))
 
     return render(request, "posts/posts_list.html", {"posts": posts, "current_sort": sort_by})
 
