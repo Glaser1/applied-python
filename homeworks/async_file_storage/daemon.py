@@ -26,7 +26,7 @@ class DaemonAsyncHttpServer:
         return content
 
     async def write_file(self, text, file_lifetime):
-        async with aiofiles.tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        async with aiofiles.tempfile.NamedTemporaryFile(delete=True, mode="w") as temp_file:
             await temp_file.write(text)
             await asyncio.sleep(file_lifetime)
 
@@ -49,8 +49,8 @@ class DaemonAsyncHttpServer:
                 if "".join(results):
                     return web.Response(text="Файл с таким названием уже существует!")
 
-                await self.write_file(content, file_lifetime=self.file_lifetime)
-
+                asyncio.create_task(self.write_file(content, file_lifetime=self.file_lifetime))
+                
                 return web.Response(status=201)
 
     async def handle(self, request):
@@ -71,7 +71,6 @@ class DaemonAsyncHttpServer:
                     self.fetch(session=session, url=f"http://{daemon_socket}/{filename}?redirected=True")
                     for daemon_socket in self.nodes
                 ]
-
                 results = await asyncio.gather(*tasks)
 
                 results = "".join(results)
@@ -79,10 +78,11 @@ class DaemonAsyncHttpServer:
                     results = json.loads(results)
                     text = results.get("text")
                     if self.to_save_locally[f"localhost:{results['port']}"]:
-                        await self.write_file(text=text, file_lifetime=self.file_lifetime)
+                        asyncio.create_task(self.write_file(text=text, file_lifetime=self.file_lifetime))
 
                     return web.Response(text=text)
-                return web.Response(status=404)
+
+        return web.Response(status=404)
 
     def run(self):
         app = web.Application()
