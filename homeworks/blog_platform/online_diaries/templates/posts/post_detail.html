@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ post.topic }}
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Post -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+            <h1 class="h3 mb-0">{{ post.topic }}</h1>
+            {% if user.is_authenticated and post.author == user %}
+              <form action="{% url 'posts:toggle_post_visibility' post.pk %}" method="post">
+                {% csrf_token %}
+                {% if not post.is_hidden %}
+                  <button class="btn btn-warning btn-sm">Скрыть пост</button>
+                {% else %}
+                  <button class="btn btn-success btn-sm">Показать пост</button>
+                {% endif %}
+              </form>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+              <form action="{% url 'posts:toggle_like' post.pk %}" method="post" class="d-inline">
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent"><span class="badge bg-danger">❤️ {{ post.likes_count }}</span></button>
+              </form>
+            {% endif %}
+
+            <div class="d-flex gap-2 align-items-center mb-3">
+              <span class="badge bg-secondary">👁 {{ post.views_count }}</span>
+            </div>
+          </div>
+
+          <p class="text-muted small">Опубликовано:
+            {{ post.created_at|date:'d.m.Y H:i' }}</p>
+
+          <hr />
+
+          <div class="fs-5">{{ post.text|linebreaks }}</div>
+        </div>
+      </div>
+
+      <!-- Comment form -->
+      <div class="card shadow-sm border-0 mb-">
+        <div class="card-body">
+          <h2 class="h mb-3">Оставить комментарий</h2>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label class="form-label">Комментарий</label>
+              {{ form.text }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Отправить</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Comments -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h4 mb-4">Комментарии</h2>
+
+          {% for comment in page_obj %}
+            <div class="border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <strong>{{ comment.author }}</strong>
+
+                <small class="text-muted">{{ comment.created_at|date:'d.m.Y H:i' }}</small>
+              </div>
+
+              <div>{{ comment.text|linebreaks }}</div>
+            </div>
+          {% empty %}
+            <div class="alert alert-secondary">Комментариев пока нет</div>
+          {% endfor %}
+
+          <!-- Pagination -->
+          {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+              <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                  </li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                  </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

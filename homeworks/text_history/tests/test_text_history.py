@@ -7,9 +7,9 @@ class TextHistoryTestCase(TestCase):
     def test_text__trivial(self):
         h = TextHistory()
 
-        self.assertEqual('', h.text)
+        self.assertEqual("", h.text)
         with self.assertRaises(AttributeError):
-            h.text = 'NEW'
+            h.text = "NEW"
 
     def test_version__trivial(self):
         h = TextHistory()
@@ -20,15 +20,15 @@ class TextHistoryTestCase(TestCase):
 
     def test_action(self):
         h = TextHistory()
-        action = InsertAction(pos=0, text='abc', from_version=0, to_version=10)
+        action = InsertAction(pos=0, text="abc", from_version=0, to_version=10)
 
         self.assertEqual(10, h.action(action))
-        self.assertEqual('abc', h.text)
+        self.assertEqual("abc", h.text)
         self.assertEqual(10, h.version)
 
     def test_action__bad(self):
         h = TextHistory()
-        action = InsertAction(pos=0, text='abc', from_version=10, to_version=10)
+        action = InsertAction(pos=0, text="abc", from_version=10, to_version=10)
 
         with self.assertRaises(ValueError):
             h.action(action)
@@ -36,76 +36,76 @@ class TextHistoryTestCase(TestCase):
     def test_insert(self):
         h = TextHistory()
 
-        self.assertEqual(1, h.insert('abc'))
-        self.assertEqual('abc', h.text)
+        self.assertEqual(1, h.insert("abc"))
+        self.assertEqual("abc", h.text)
         self.assertEqual(1, h.version)
 
-        self.assertEqual(2, h.insert('xyz', pos=2))
-        self.assertEqual('abxyzc', h.text)
+        self.assertEqual(2, h.insert("xyz", pos=2))
+        self.assertEqual("abxyzc", h.text)
         self.assertEqual(2, h.version)
 
-        self.assertEqual(3, h.insert('END'))
-        self.assertEqual('abxyzcEND', h.text)
+        self.assertEqual(3, h.insert("END"))
+        self.assertEqual("abxyzcEND", h.text)
         self.assertEqual(3, h.version)
 
-        self.assertEqual(4, h.insert('BEGIN', pos=0))
-        self.assertEqual('BEGINabxyzcEND', h.text)
+        self.assertEqual(4, h.insert("BEGIN", pos=0))
+        self.assertEqual("BEGINabxyzcEND", h.text)
         self.assertEqual(4, h.version)
 
     def test_insert__bad(self):
         h = TextHistory()
-        self.assertEqual(1, h.insert('abc'))
+        self.assertEqual(1, h.insert("abc"))
 
         with self.assertRaises(ValueError):
-            h.insert('abc', pos=10)
+            h.insert("abc", pos=10)
 
         with self.assertRaises(ValueError):
-            h.insert('abc', pos=-1)
+            h.insert("abc", pos=-1)
 
     def test_replace(self):
         h = TextHistory()
 
-        self.assertEqual(1, h.replace('abc'))
-        self.assertEqual('abc', h.text)
+        self.assertEqual(1, h.replace("abc"))
+        self.assertEqual("abc", h.text)
         self.assertEqual(1, h.version)
 
-        self.assertEqual(2, h.replace('xyz', pos=2))
-        self.assertEqual('abxyz', h.text)
+        self.assertEqual(2, h.replace("xyz", pos=2))
+        self.assertEqual("abxyz", h.text)
         self.assertEqual(2, h.version)
 
-        self.assertEqual(3, h.replace('X', pos=2))
-        self.assertEqual('abXyz', h.text)
+        self.assertEqual(3, h.replace("X", pos=2))
+        self.assertEqual("abXyz", h.text)
         self.assertEqual(3, h.version)
 
-        self.assertEqual(4, h.replace('END'))
-        self.assertEqual('abXyzEND', h.text)
+        self.assertEqual(4, h.replace("END"))
+        self.assertEqual("abXyzEND", h.text)
         self.assertEqual(4, h.version)
 
     def test_replace__bad(self):
         h = TextHistory()
-        self.assertEqual(1, h.insert('abc'))
+        self.assertEqual(1, h.insert("abc"))
 
         with self.assertRaises(ValueError):
-            h.replace('abc', pos=10)
+            h.replace("abc", pos=10)
 
         with self.assertRaises(ValueError):
-            h.replace('abc', pos=-1)
+            h.replace("abc", pos=-1)
 
     def test_delete(self):
         h = TextHistory()
-        self.assertEqual(1, h.insert('abc xyz'))
+        self.assertEqual(1, h.insert("abc xyz"))
 
         self.assertEqual(2, h.delete(pos=1, length=2))
-        self.assertEqual('a xyz', h.text)
+        self.assertEqual("a xyz", h.text)
         self.assertEqual(2, h.version)
 
         self.assertEqual(3, h.delete(pos=3, length=0))
-        self.assertEqual('a xyz', h.text)
+        self.assertEqual("a xyz", h.text)
         self.assertEqual(3, h.version)
 
     def test_delete__bad(self):
         h = TextHistory()
-        self.assertEqual(1, h.insert('abc'))
+        self.assertEqual(1, h.insert("abc"))
 
         with self.assertRaises(ValueError):
             h.delete(pos=10, length=2)
@@ -118,11 +118,11 @@ class TextHistoryTestCase(TestCase):
 
     def test_get_actions(self):
         h = TextHistory()
-        h.insert('a')
-        h.insert('bc')
-        h.replace('B', pos=1)
+        h.insert("a")
+        h.insert("bc")
+        h.replace("B", pos=1)
         h.delete(pos=0, length=1)
-        self.assertEqual('Bc', h.text)
+        self.assertEqual("Bc", h.text)
 
         actions = h.get_actions(1)
 
@@ -135,13 +135,13 @@ class TextHistoryTestCase(TestCase):
         # insert
         self.assertEqual(1, insert.from_version)
         self.assertEqual(2, insert.to_version)
-        self.assertEqual('bc', insert.text)
+        self.assertEqual("bc", insert.text)
         self.assertEqual(1, insert.pos)
 
         # replace
         self.assertEqual(2, replace.from_version)
         self.assertEqual(3, replace.to_version)
-        self.assertEqual('B', replace.text)
+        self.assertEqual("B", replace.text)
         self.assertEqual(1, replace.pos)
 
         # delete
@@ -152,9 +152,9 @@ class TextHistoryTestCase(TestCase):
 
     def test_get_actions__bad(self):
         h = TextHistory()
-        h.insert('a')
-        h.insert('b')
-        h.insert('c')
+        h.insert("a")
+        h.insert("b")
+        h.insert("c")
 
         with self.assertRaises(ValueError):
             h.get_actions(0, 10)
@@ -169,5 +169,57 @@ class TextHistoryTestCase(TestCase):
         h = TextHistory()
         self.assertEqual([], h.get_actions())
 
-        h.insert('a')
+        h.insert("a")
         self.assertEqual([], h.get_actions(0, 0))
+
+    ## дописать разнообразные тесты для replace и delete optimizations
+    def test_get_optimized_inserts(self):
+        h = TextHistory()
+        h.insert(pos=0, text="x")
+        h.insert(pos=1, text="y")
+        h.insert(pos=2, text="z")
+
+        actions = h.get_actions(0, 2)
+        self.assertEqual(1, len(actions))
+        self.assertIsInstance(actions[0], InsertAction)
+        self.assertEqual(0, actions[0].pos)
+        self.assertEqual("xyz", actions[0].text)
+        self.assertEqual(0, actions[0].from_version)
+        self.assertEqual(3, actions[0].to_version)
+
+        actions = h.get_actions(1, 2)
+        self.assertEqual(1, len(actions))
+        self.assertIsInstance(actions[0], InsertAction)
+        self.assertEqual(1, actions[0].pos)
+        self.assertEqual("yz", actions[0].text)
+        self.assertEqual(1, actions[0].from_version)
+        self.assertEqual(3, actions[0].to_version)
+
+    def test_get_optimized_replaces(self):
+        h = TextHistory()
+        h.insert(pos=0, text="abc")
+        h.replace(pos=0, text="x")
+        h.replace(pos=1, text="y")
+        h.replace(pos=2, text="z")
+
+        actions = h.get_actions(0, 3)
+        self.assertEqual(2, len(actions))
+        self.assertIsInstance(actions[1], ReplaceAction)
+        self.assertEqual(0, actions[1].pos)
+        self.assertEqual("xyz", actions[1].text)
+        self.assertEqual(1, actions[1].from_version)
+        self.assertEqual(4, actions[1].to_version)
+
+    def test_get_optimized_deletes(self):
+        h = TextHistory()
+        h.insert(text="abcABC")
+        h.delete(pos=5, length=1)
+        h.delete(pos=4, length=1)
+        h.delete(pos=2, length=2)
+
+        actions = h.get_actions(0, 3)
+        self.assertEqual(2, len(actions))
+        self.assertIsInstance(actions[1], DeleteAction)
+        self.assertEqual("ab", h.text)
+        self.assertEqual(1, actions[1].from_version)
+        self.assertAlmostEqual(4, actions[1].to_version)

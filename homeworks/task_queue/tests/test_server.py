@@ -29,7 +29,6 @@ class ServerBaseTest(TestCase):
     def test_base_scenario(self):
         task_id = self.send(b'ADD 1 5 12345')
         self.assertEqual(b'YES', self.send(b'IN 1 ' + task_id))
-
         self.assertEqual(task_id + b' 5 12345', self.send(b'GET 1'))
         self.assertEqual(b'YES', self.send(b'IN 1 ' + task_id))
         self.assertEqual(b'YES', self.send(b'ACK 1 ' + task_id))

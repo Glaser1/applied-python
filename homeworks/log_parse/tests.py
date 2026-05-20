@@ -2,28 +2,32 @@
 
 import json
 from glob import glob
+
 from log_parse import parse
 
 error_message = "Полученный и ожидаемый массивы различаются, получен: {} ожидался: {}, файл {}"
 
+tests = glob("tests/*.json")
+print(tests)
+
 
 def run_tests():
-    for filename in glob('tests/*.json'):
+    for filename in tests:
+        # print(filename)
         data = json.load(open(filename))
-        params, response = data['params'], data['response']
+        params, response = data["params"], data["response"]
         got = parse(**params)
+        print(f'{params=}')
+        print(f"{got=}")
         if len(got) != len(response):
-            print(error_message.format(
-                str(got), str(response), filename
-            ))
+            print(error_message.format(str(got), str(response), filename))
         for index, item in enumerate(response):
             if got[index] != response[index]:
-                print(error_message.format(
-                    str(got), str(response), filename
-                ))
+                print(error_message.format(str(got), str(response), filename))
                 return
+
     print("All tests passed!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()

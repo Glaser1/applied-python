@@ -1,0 +1,31 @@
+daemons:
+        a:
+                port: 80
+                directory: tmp/a
+                to_save_locally:
+                        localhost:81: true
+                        localhost:82: true
+                nodes:
+                        - "localhost:81"
+                        - "localhost:82"
+                file_lifetime: 10
+        b:
+                port: 81
+                directory: tmp/b
+                to_save_locally:
+                        localhost:80: true
+                        localhost:82: true
+                nodes:
+                        - "localhost:80"
+                        - "localhost:82"
+                file_lifetime: 10
+        c:
+                port: 82
+                directory: tmp/c
+                to_save_locally:
+                        localhost:80: true
+                        localhost:81: true
+                nodes:
+                        - "localhost:81"
+                        - "localhost:80"
+                file_lifetime: 10

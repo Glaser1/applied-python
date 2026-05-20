@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Все посты
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Все посты</h1>
+
+    <div class="d-flex gap-2">
+      <!-- SORT -->
+      <a href="?sort=created_at{% if request.GET.period %}
+          &period={{ request.GET.period }}
+        {% endif %}"
+        class="btn btn-outline-primary {% if current_sort == 'created_at' %}active{% endif %}">
+        По времени
+      </a>
+
+      <a href="?sort=views{% if request.GET.period %}
+          &period={{ request.GET.period }}
+        {% endif %}"
+        class="btn btn-outline-success {% if current_sort == 'views' %}active{% endif %}">
+        По популярности
+      </a>
+    </div>
+  </div>
+
+  <div class="mb-4">
+
+    <form method="get" class="d-flex gap-2 align-items-center">
+
+        <!-- сохраняем сортировку -->
+        <input type="hidden" name="sort" value="{{ current_sort }}">
+
+        <label class="form-label mb-0">
+            Период:
+        </label>
+
+        <select name="period" class="form-select w-auto">
+
+            <option value="all" {% if request.GET.period == "all" or not request.GET.period %}selected{% endif %}>
+                Всё время
+            </option>
+
+            <option value="day" {% if request.GET.period == "day" %}selected{% endif %}>
+                За день
+            </option>
+
+            <option value="month" {% if request.GET.period == "month" %}selected{% endif %}>
+                За месяц
+            </option>
+
+            <option value="year" {% if request.GET.period == "year" %}selected{% endif %}>
+                За год
+            </option>
+            
+              <option value="hour" {% if request.GET.period == "hour" %}selected{% endif %}>
+                За час
+            </option>
+        </select>
+
+        <button type="submit" class="btn btn-primary btn-sm">
+            Применить
+        </button>
+
+    </form>
+
+</div>
+
+  <div class="row">
+    {% for post in posts %}
+      <div class="col-12 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h2 class="h4"><a href="{% url 'posts:post_detail' post.pk %}" class="text-decoration-none">{{ post.topic }}</a></h2>
+
+              <span class="badge bg-secondary">👁 {{ post.views_count }}</span>
+            </div>
+
+            <p class="text-muted small">{{ post.created_at|date:'d.m.Y H:i' }}</p>
+
+            <p class="card-text">{{ post.text|truncatechars:250 }}</p>
+
+            <a href="{% url 'posts:post_detail' post.pk %}" class="btn btn-primary">Читать далее</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info">Постов пока нет</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% comment %} {% if posts.has_other_pages %}
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.previous_page_number }}&sort={{ current_sort }}">Назад</a>
+          </li>
+        {% endif %}
+
+        {% for page_num in posts.paginator.page_range %}
+          <li class="page-item {% if posts.number == page_num %}active{% endif %}">
+            <a class="page-link" href="?page={{ page_num }}&sort={{ current_sort }}">{{ page_num }}</a>
+          </li>
+        {% endfor %}
+
+        {% if posts.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.next_page_number }}&sort={{ current_sort }}">Вперед</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %} {% endcomment %}
+{% endblock %}
