@@ -24,7 +24,10 @@
       <ul class="navbar-nav">
         {% if user.is_authenticated %}
           <li class="nav-item">
-            <span class="nav-link">Привет, {{ user.username }}</span>
+            <a class="nav-link" href="{% url 'users:profile' user.username %}">Привет, {{ user.username }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'auth:edit_profile' %}">Редактировать профиль</a>
           </li>
           <li class="nav-item">
             <form class="nav-link" action="{% url 'auth:logout' %}" method="post">
