@@ -91,3 +91,5 @@ db.sqlite3
 test.py*
 *tmp/
 queue_state.txt
+media/
+
