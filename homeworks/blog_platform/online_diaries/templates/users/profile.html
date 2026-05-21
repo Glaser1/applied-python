@@ -8,7 +8,25 @@
   <div class="row">
     <div class="col-lg-4">
       <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
+        <div class="card-body text-center">
+
+          <!-- AVATAR -->
+          {% if user.profile_image %}
+            <img
+              src="{{ user.profile_image.url }}"
+              alt="{{ user.username }}"
+              class="rounded-circle shadow-sm mb-3"
+              style="width: 160px; height: 160px; object-fit: cover;"
+            />
+          {% else %}
+            <div
+              class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm"
+              style="width: 160px; height: 160px; font-size: 48px;"
+            >
+              {{ user.username|first|upper }}
+            </div>
+          {% endif %}
+
           <h1 class="h3">{{ user.username }}</h1>
 
           <hr />
@@ -23,8 +41,10 @@
             <strong>{{ user.comments.count }}</strong>
           </p>
 
-          <p class="text-muted">Дата регистрации:
-            {{ user.date_joined|date:'d.m.Y' }}</p>
+          <p class="text-muted">
+            Дата регистрации:
+            {{ user.date_joined|date:'d.m.Y' }}
+          </p>
         </div>
       </div>
     </div>
@@ -38,14 +58,22 @@
 
           {% for post in user.posts.all %}
             <div class="border rounded p-3 mb-3">
-              <h3 class="h5"><a href="{% url 'posts:post_detail' post.pk %}">{{ post.topic }}</a></h3>
+              <h3 class="h5">
+                <a href="{% url 'posts:post_detail' post.pk %}">
+                  {{ post.topic }}
+                </a>
+              </h3>
 
-              <p class="text-muted small">{{ post.created_at|date:'d.m.Y H:i' }}</p>
+              <p class="text-muted small">
+                {{ post.created_at|date:'d.m.Y H:i' }}
+              </p>
 
               <p>{{ post.text|truncatechars:200 }}</p>
             </div>
           {% empty %}
-            <div class="alert alert-secondary">У пользователя пока нет постов</div>
+            <div class="alert alert-secondary">
+              У пользователя пока нет постов
+            </div>
           {% endfor %}
         </div>
       </div>
@@ -63,11 +91,15 @@
               <small class="text-muted">
                 К посту:
 
-                <a href="{% url 'posts:post_detail' comment.post.pk %}">{{ comment.post.topic }}</a>
+                <a href="{% url 'posts:post_detail' comment.post.pk %}">
+                  {{ comment.post.topic }}
+                </a>
               </small>
             </div>
           {% empty %}
-            <div class="alert alert-secondary">Комментариев пока нет</div>
+            <div class="alert alert-secondary">
+              Комментариев пока нет
+            </div>
           {% endfor %}
         </div>
       </div>
