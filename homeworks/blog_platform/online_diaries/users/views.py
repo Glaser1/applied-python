@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.query import Prefetch
 from django.shortcuts import get_object_or_404
@@ -15,6 +15,13 @@ class SignUp(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("posts:posts_list")
     template_name = "users/signup.html"
+
+    def form_valid(self, form):
+        uploaded_file = self.request.FILES.get("profile_image")
+        form.instance.profile_image = uploaded_file
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
 
 class UserDetailView(DetailView):
@@ -34,7 +41,7 @@ class UserDetailView(DetailView):
 
 class EditProfileView(LoginRequiredMixin, UpdateView):
     model = User
-    fields = ("first_name", "last_name", "username")
+    fields = ("first_name", "last_name", "username", "profile_image")
     template_name = "users/signup.html"
     success_url = reverse_lazy("posts:posts_list")
 
